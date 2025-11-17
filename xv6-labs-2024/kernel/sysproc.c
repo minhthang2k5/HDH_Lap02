@@ -91,3 +91,23 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+uint64
+sys_sysinfo(void) {
+  uint64 userAddr;
+  struct sysinfo info;
+
+  argaddr(0, &userAddr);
+    
+  
+  info.freemem = freemem();
+  info.nproc = getnproc();
+
+  //  sao chép thông tin vào bộ nhớ của tiến trình gọi hàm
+  struct proc *p = myproc();
+
+  if(copyout(p->pagetable, userAddr, (char*)&info, sizeof(info)) < 0)
+    return -1;
+  
+  return 0;
+}
