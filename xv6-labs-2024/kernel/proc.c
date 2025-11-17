@@ -146,6 +146,9 @@ found:
   p->context.ra = (uint64)forkret;
   p->context.sp = p->kstack + PGSIZE;
 
+
+  //Init mask progress = 0
+  p->traced =0;
   return p;
 }
 
@@ -169,6 +172,7 @@ freeproc(struct proc *p)
   p->killed = 0;
   p->xstate = 0;
   p->state = UNUSED;
+  p->traced = 0;
 }
 
 // Create a user page table for a given process, with no user memory,
@@ -298,6 +302,8 @@ fork(void)
 
   // copy saved user registers.
   *(np->trapframe) = *(p->trapframe);
+  //Copy mark from parent to child
+  np->traced =p->traced;
 
   // Cause fork to return 0 in the child.
   np->trapframe->a0 = 0;
